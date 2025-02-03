@@ -6,10 +6,10 @@ from dataclasses import dataclass
 from transformers import DataCollatorWithPadding
 
 
-class TabulaDataset(Dataset):
-    """ Tabula Dataset
+class tabulaDataset(Dataset):
+    """ tabula Dataset
 
-    The TabulaDataset overwrites the _getitem function of the HuggingFace Dataset Class to include the permutation step.
+    The tabulaDataset overwrites the _getitem function of the HuggingFace Dataset Class to include the permutation step.
 
     Attributes:
         tokenizer (AutoTokenizer): Tokenizer from HuggingFace
@@ -23,7 +23,7 @@ class TabulaDataset(Dataset):
         self.tokenizer = tokenizer
 
     def _getitem(self, key: tp.Union[int, slice, str], decoded: bool = True, **kwargs) -> tp.Union[tp.Dict, tp.List]:
-        """ Get Item from Tabular Data
+        """ Get Item from tabular Data
 
         Get one instance of the tabular data, permuted, converted to text and tokenized.
         """
@@ -47,8 +47,8 @@ class TabulaDataset(Dataset):
             return self._getitem(keys)
 
 @dataclass
-class TabulaDataCollator(DataCollatorWithPadding):
-    """ Tabula Data Collator
+class tabulaDataCollator(DataCollatorWithPadding):
+    """ tabula Data Collator
 
     Overwrites the DataCollatorWithPadding to also pad the labels and not only the input_ids
     """

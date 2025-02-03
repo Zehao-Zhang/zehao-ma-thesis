@@ -14,16 +14,16 @@ from transformers import (AutoTokenizer,
                           TrainingArguments,
                           AutoConfig)
 
-from tabula.tabula_dataset import TabulaDataset, TabulaDataCollator
-from tabula.tabula_start import TabulaStart, CategoricalStart, ContinuousStart, RandomStart
-from tabula.tabula_trainer import TabulaTrainer, calculate_epsilon
-from tabula.tabula_utils import _array_to_dataframe, _get_column_distribution, _convert_tokens_to_text, \
+from dp_tabula.tabula_dataset import tabulaDataset, tabulaDataCollator
+from dp_tabula.tabula_start import tabulaStart, CategoricalStart, ContinuousStart, RandomStart
+from dp_tabula.dp_tabula_trainer import dp_tabulaTrainer
+from dp_tabula.tabula_utils import _array_to_dataframe, _get_column_distribution, _convert_tokens_to_text, \
     _convert_text_to_tabular_data
 
 
-class Tabula:
+class DP_Tabula:
     """
-    The Tabula class handles the whole generation flow. It is used to fine-tune a large language model for tabular data,
+    The tabula class handles the whole generation flow. It is used to fine-tune a large language model for tabular data,
     and to sample synthetic tabular data.
 
     Attributes:
@@ -46,7 +46,7 @@ class Tabula:
                  batch_size: int = 8, categorical_columns: list = [], 
                  use_dp: bool = False, clip_coeff: float = 1.0, sigma: float = 1.0, 
                  micro_batch_size: int = 1, learning_rate: int = 1e-3, pretrain_epochs: int = 10, **train_kwargs):
-        """ Initializes Tabula.
+        """ Initializes tabula.
 
         Args:
             llm: HuggingFace checkpoint of a pretrained large language model, used as the basis of our model
@@ -127,9 +127,9 @@ class Tabula:
         return data
 
     def fit(self, data: tp.Union[pd.DataFrame, np.ndarray], column_names: tp.Optional[tp.List[str]] = None,
-            conditional_col: tp.Optional[str] = None, resume_from_checkpoint: tp.Union[bool, str] = False) -> TabulaTrainer:
+            conditional_col: tp.Optional[str] = None, resume_from_checkpoint: tp.Union[bool, str] = False) -> dp_tabulaTrainer:
         """
-        Fine-tune Tabula using tabular data with an initial pre-training phase without DP, followed by a DP phase.
+        Fine-tune tabula using tabular data with an initial pre-training phase without DP, followed by a DP phase.
         """
         # Convert data to DataFrame and prepare dataset
         df = _array_to_dataframe(data, columns=column_names)
@@ -137,7 +137,7 @@ class Tabula:
         self._update_conditional_information(df, conditional_col)
         if self.categorical_columns:
             df = self.encode_categorical_column(df)
-        tabula_ds = TabulaDataset.from_pandas(df)
+        tabula_ds = tabulaDataset.from_pandas(df)
         tabula_ds.set_tokenizer(self.tokenizer)
 
         dp_train_args = TrainingArguments(
@@ -150,12 +150,12 @@ class Tabula:
             **self.train_hyperparameters
         )
 
-        dp_trainer = TabulaTrainer(
+        dp_trainer = dp_tabulaTrainer(
             model=self.model,
             args=dp_train_args,
             train_dataset=tabula_ds,
             tokenizer=self.tokenizer,
-            data_collator=TabulaDataCollator(self.tokenizer),
+            data_collator=tabulaDataCollator(self.tokenizer),
             use_dp=True,
             clip_coeff=self.clip_coeff,
             sigma=self.sigma,
@@ -274,14 +274,14 @@ class Tabula:
                                       do_sample=True, temperature=temperature, pad_token_id=50256)
             generated_data.append(torch.squeeze(gen))
 
-        # Convert Text back to Tabular Data
+        # Convert Text back to tabular Data
         decoded_data = _convert_tokens_to_text(generated_data, self.tokenizer)
         df_gen = _convert_text_to_tabular_data(decoded_data, pd.DataFrame(columns=self.columns))
 
         return df_gen
 
     def save(self, path: str):
-        """ Save Tabula Model
+        """ Save tabula Model
 
         Saves the model weights and a configuration file in the given directory.
 
@@ -312,7 +312,7 @@ class Tabula:
     def load_finetuned_model(self, path: str):
         """ Load fine-tuned model
 
-        Load the weights of a fine-tuned large language model into the Tabula pipeline
+        Load the weights of a fine-tuned large language model into the tabula pipeline
 
         Args:
             path: Path to the fine-tuned model
@@ -321,15 +321,15 @@ class Tabula:
 
     @classmethod
     def load_from_dir(cls, path: str):
-        """ Load Tabula class
+        """ Load tabula class
 
-        Load trained Tabula model from directory.
+        Load trained tabula model from directory.
 
         Args:
-            path: Directory where Tabula model is saved
+            path: Directory where tabula model is saved
 
         Returns:
-            New instance of Tabula loaded from directory
+            New instance of tabula loaded from directory
         """
         assert os.path.isdir(path), f"Directory {path} does not exist."
 
@@ -365,7 +365,7 @@ class Tabula:
         self.conditional_col_dist = _get_column_distribution(df, self.conditional_col)
 
     def _get_start_sampler(self, start_col: tp.Optional[str],
-                           start_col_dist: tp.Optional[tp.Union[tp.Dict, tp.List]]) -> TabulaStart:
+                           start_col_dist: tp.Optional[tp.Union[tp.Dict, tp.List]]) -> tabulaStart:
         if start_col and start_col_dist is None:
             raise ValueError(f"Start column {start_col} was given, but no corresponding distribution.")
         if start_col_dist is not None and not start_col:

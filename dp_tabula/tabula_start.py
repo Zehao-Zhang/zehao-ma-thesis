@@ -26,10 +26,10 @@ def _pad_tokens(tokens):
     return tokens
 
 
-class TabulaStart:
-    """ Abstract super class Tabula Start
+class tabulaStart:
+    """ Abstract super class tabula Start
 
-    Tabula Start creates tokens to start the generation process.
+    tabula Start creates tokens to start the generation process.
 
     Attributes:
         tokenizer (AutoTokenizer): Tokenizer, automatically downloaded from llm-checkpoint
@@ -57,7 +57,7 @@ class TabulaStart:
         raise NotImplementedError("This has to be overwritten but the subclasses")
 
 
-class CategoricalStart(TabulaStart):
+class CategoricalStart(tabulaStart):
     """ Categorical Starting Feature
 
     A categorical column with its categories is used as starting point.
@@ -92,7 +92,7 @@ class CategoricalStart(TabulaStart):
         return start_tokens
 
 
-class ContinuousStart(TabulaStart):
+class ContinuousStart(tabulaStart):
     """ Continuous Starting Feature
 
     A continuous column with some noise is used as starting point.
@@ -131,7 +131,7 @@ class ContinuousStart(TabulaStart):
         return start_tokens
 
 
-class RandomStart(TabulaStart):
+class RandomStart(tabulaStart):
     """ Random Starting Features
 
     Random column names are used as start point. Can be used if no distribution of any column is known.

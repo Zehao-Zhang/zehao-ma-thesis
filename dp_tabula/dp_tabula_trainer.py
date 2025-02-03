@@ -44,8 +44,8 @@ def _seed_worker(_):
     torch.cuda.manual_seed_all(worker_seed)
 
 
-class TabulaTrainer(Trainer):
-    """ Tabula Trainer
+class dp_tabulaTrainer(Trainer):
+    """ dp_tabula Trainer
 
     Adds DP-SGD functionality by clipping gradients and adding noise in each training step.
     """

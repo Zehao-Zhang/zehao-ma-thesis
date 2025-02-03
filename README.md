@@ -33,9 +33,9 @@ Cloning this repository for DP-Tabula and the [evaluation framework](https://git
 In this folder, the original datasets as well as their training and test datasets are stored into corresponding folders. 
 ![Datasets Introduction](image.png)
 
-- **tabula**:
-  - **tabula**: Main implementation of the Tabula model with DP parameters
-  - **tabula_trainer**: Training implementation with DP-SGD
+- **dp_tabula**:
+  - **dp_tabula**: Main implementation of the Tabula model with DP parameters
+  - **dp_tabula_trainer**: Training implementation with DP-SGD
   - **tabula_start**: Initialization and startup code
 
 - **model_training**:
@@ -58,7 +58,7 @@ Below is an example of how to generate synthetic data using the `DP-Tabula`.
 
 ```python
 # Import the necessary libraries and the DP-Tabula model
-from tabula import Tabula
+from dp_tabula import DP_Tabula
 import pandas as pd
 import torch
 
@@ -66,7 +66,7 @@ import torch
 train_data = pd.read_csv('../examples/Real_Datasets/insurance/insurance_train.csv')
 
 # Create the DP-Tabula model
-model = Tabula(
+model = DP_Tabula(
     llm='distilgpt2',
     experiment_dir="adult_training",
     batch_size=64,
@@ -80,6 +80,7 @@ model = Tabula(
 )
 
 # Load the pre-trained model, can be downloaded from [here](https://drive.google.com/file/d/1_YxelekxY5MXhgn93MYgsZEEfBYAy7h6/view) and put it in the pretrained-model folder
+# The model taken here is the distilgpt2, which is a random initilized model, which is the  base model for tabula framework
 model.model.load_state_dict(torch.load("pretrained-model/model.pt"), strict=False)
 # Fit the model on the data
 model.fit(train_data)
