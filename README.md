@@ -68,7 +68,7 @@ train_data = pd.read_csv('../examples/Real_Datasets/insurance/insurance_train.cs
 # Create the DP-Tabula model
 model = DP_Tabula(
     llm='distilgpt2',
-    experiment_dir="adult_training",
+    experiment_dir="insurance_training",
     batch_size=64,
     epochs=400,
     categorical_columns=["sex", "children", "sm", "region"], # categorical columns, different for each dataset
@@ -79,10 +79,18 @@ model = DP_Tabula(
     learning_rate=5e-4
 )
 
-# Load the pre-trained model, can be downloaded from [here](https://drive.google.com/file/d/1_YxelekxY5MXhgn93MYgsZEEfBYAy7h6/view) and put it in the pretrained-model folder
-# The model taken here is the distilgpt2, which is a random initilized model, which is the  base model for tabula framework
+# Load the model, can be downloaded from [here](https://drive.google.com/file/d/1_YxelekxY5MXhgn93MYgsZEEfBYAy7h6/view) and put it in the pretrained-model folder
+
+# In Tabula, they compare three models:
+# Pre-trained DistilGPT-2 – A model trained on NLP tasks, which performed the worst for tabular data synthesis.
+# Randomly initialized DistilGPT-2 – A model with no pre-training, which converged faster than the NLP pre-trained model.
+# Fine-tuned DistilGPT-2 on tabular data (e.g., Intrusion dataset) – A model trained from scratch and then fine-tuned on tabular data, achieving the best performance.
+
+# This model downloaded is a pre-trained DistilGPT-2 model fine-tuned on the Intrusion dataset, as our foundation model. 
+
+
 model.model.load_state_dict(torch.load("pretrained-model/model.pt"), strict=False)
-# Fit the model on the data
+# Fit the model on the data (Where DP is added into the training process)
 model.fit(train_data)
 
 # Save the trained model
