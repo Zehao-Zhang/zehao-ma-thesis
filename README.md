@@ -6,7 +6,8 @@ This project is based on the paper "TabuLa: Harnessing Language Models for Tabul
 
 
 ## Prerequisites
-The python version 3.10 was used to develop this framework.
+The python version 3.10 was used to develop this framework. All experiments are conducted in Colab with A100 GPU. Please be noted to change the path for original dataset and synthetic datasets
+
 For the following packages, these versions were used:
 - Numpy version: 1.26.4
 - Pandas version: 2.2.2
@@ -32,6 +33,9 @@ Cloning this repository for DP-Tabula and the [evaluation framework](https://git
 - **Real_Datasets**: 
 In this folder, the original datasets as well as their training and test datasets are stored into corresponding folders. 
 ![Datasets Introduction](image.png)
+
+- **Synthetic_Datasets**: 
+Here is the link of [synthetic datasets](https://drive.google.com/drive/folders/1EhOJ-q0_sxLNJjY66fVLxPvkk9iy86yR?usp=sharing)
 
 - **dp_tabula**:
   - **dp_tabula**: Main implementation of the Tabula model with DP parameters
@@ -67,7 +71,7 @@ train_data = pd.read_csv('../examples/Real_Datasets/insurance/insurance_train.cs
 
 # Create the DP-Tabula model
 model = DP_Tabula(
-    llm='distilgpt2',
+    llm='distilgpt2', # The llm taken
     experiment_dir="insurance_training",
     batch_size=64,
     epochs=400,
